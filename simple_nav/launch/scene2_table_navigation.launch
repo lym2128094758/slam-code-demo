@@ -1,0 +1,21 @@
+<launch>
+  <arg name="map" default="$(find simple_nav)/my_map.yaml"/>
+  <arg name="target_x" default="0.0"/>
+  <arg name="target_y" default="-1.02"/>
+  <arg name="target_yaw_deg" default="-90.0"/>
+  <arg name="xy_tolerance" default="0.15"/>
+  <arg name="timeout" default="180.0"/>
+
+  <include file="$(find simple_nav)/launch/my_amcl.launch"/>
+  <include file="$(find simple_nav)/launch/my_move_base.launch"/>
+
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map)" output="screen"/>
+
+  <node pkg="simple_nav" type="scene2_table_nav.py" name="scene2_table_nav_node" output="screen">
+    <param name="target_x" value="$(arg target_x)"/>
+    <param name="target_y" value="$(arg target_y)"/>
+    <param name="target_yaw_deg" value="$(arg target_yaw_deg)"/>
+    <param name="xy_tolerance" value="$(arg xy_tolerance)"/>
+    <param name="timeout" value="$(arg timeout)"/>
+  </node>
+</launch>

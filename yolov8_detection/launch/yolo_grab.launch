@@ -1,0 +1,43 @@
+<launch>
+  <!--
+    AprilTag 检测 + 抓取控制器 一键 launch
+
+    使用方法 (仿真已启动后):
+      roslaunch yolov8_detection yolo_grab.launch auto:=true                   # 自动抓上层
+      roslaunch yolov8_detection yolo_grab.launch auto:=true target_tag:=8     # 自动抓下层
+      roslaunch yolov8_detection yolo_grab.launch                              # 仅监听 tag, 不抓取
+
+    前置条件:
+      仿真环境已运行 (load_kuavo_mujoco_craic.launch)
+      图像话题 /cam_h/color/image_raw 和 /cam_h/color/camera_info 可用
+  -->
+
+  <!-- ======================== 参数 ======================== -->
+  <arg name="auto"          default="false"  doc="是否自动执行抓取流程"/>
+  <arg name="target_tag"    default="7"      doc="目标 AprilTag ID (7=上层, 8=下层)"/>
+  <arg name="head_pitch"    default="20.0"   doc="低头角度 (度)"/>
+  <arg name="nav_dist"      default="0.33"    doc="导航目标距离 (m)"/>
+  <arg name="camera_name"   default="/cam_h/color" doc="相机命名空间"/>
+  <arg name="image_topic"   default="image_raw"    doc="图像话题名"/>
+
+  <!-- ======================== AprilTag 检测 ======================== -->
+  <include file="$(find apriltag_ros)/launch/continuous_detection.launch">
+    <arg name="camera_name" value="$(arg camera_name)"/>
+    <arg name="image_topic" value="$(arg image_topic)"/>
+  </include>
+
+  <!-- ======================== YOLO 检测节点 ======================== -->
+  <node pkg="yolov8_detection" type="yolo_detector.py" name="yolo_detector"
+        output="screen" respawn="false">
+  </node>
+
+  <!-- ======================== 抓取控制器 ======================== -->
+  <node pkg="craic_task_template" type="grab_controller.py" name="grab_controller"
+        output="screen" respawn="false" launch-prefix="bash -c 'sleep 3; exec $0 $@' --">
+    <param name="auto"        value="$(arg auto)"/>
+    <param name="target_tag"  value="$(arg target_tag)"/>
+    <param name="head_pitch"  value="$(arg head_pitch)"/>
+    <param name="nav_dist"    value="$(arg nav_dist)"/>
+  </node>
+
+</launch>

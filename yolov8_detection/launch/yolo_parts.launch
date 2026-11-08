@@ -1,0 +1,19 @@
+<launch>
+  <!--
+    YOLO 零件检测一键启动
+
+    使用方法:
+      roslaunch yolov8_detection yolo_parts.launch
+
+    前置条件:
+      仿真环境已运行 (load_kuavo_mujoco_craic.launch)
+      图像话题 /cam_h/color/image_raw, /cam_h/depth/image_raw/compressedDepth, /cam_h/color/camera_info 可用
+  -->
+
+  <!-- ======================== YOLO 零件检测节点 ======================== -->
+  <node pkg="yolov8_detection" type="yolo_parts.py" name="yolo_parts_detector"
+        output="screen" respawn="false">
+    <param name="model" value="$(find yolov8_detection)/scripts/models/best2.pt" />
+  </node>
+
+</launch>

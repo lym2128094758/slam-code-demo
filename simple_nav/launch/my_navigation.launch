@@ -1,0 +1,14 @@
+<launch>
+  <arg name="map" default="$(find simple_nav)/my_map.yaml"/>
+  <arg name="rviz" default="false"/>
+
+  <include file="$(find simple_nav)/launch/my_amcl.launch"/>
+  <include file="$(find simple_nav)/launch/my_move_base.launch"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map)" output="screen"/>
+
+  <group if="$(arg rviz)">
+    <node pkg="rviz" type="rviz" name="rviz" args="-f map" output="screen"/>
+  </group>
+
+  <node pkg="simple_nav" type="auto_patrol.py" name="auto_patrol_node" output="screen"/>
+</launch>

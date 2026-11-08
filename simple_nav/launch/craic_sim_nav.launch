@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+  在 CRAIC MuJoCo 仿真已运行（例如 scene1_patrol.py 已调用 SimLauncher）之后再启动本文件。
+
+  依赖仿真侧已有：
+  - TF: odom -> base_link（HumanoidVisualizer）
+  - 点云: /lidar/points（frame 一般为 radar）
+  - 里程计: /kinematic_data（DWA 默认使用该话题）
+
+  用法:
+    roslaunch simple_nav craic_sim_nav.launch
+    roslaunch simple_nav craic_sim_nav.launch rviz:=true
+
+  启动后在 RViz 里用「2D Pose Estimate」对齐地图与机器人，再用「2D Nav Goal」或 send_nav_goal.py 发目标。
+-->
+<launch>
+  <arg name="map" default="$(find simple_nav)/my_map.yaml"/>
+  <arg name="rviz" default="false"/>
+
+  <include file="$(find simple_nav)/launch/my_navigation.launch">
+    <arg name="map" value="$(arg map)"/>
+    <arg name="rviz" value="$(arg rviz)"/>
+  </include>
+</launch>
